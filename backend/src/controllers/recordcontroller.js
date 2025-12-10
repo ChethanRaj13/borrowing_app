@@ -14,3 +14,41 @@ exports.createRecord = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.getRecords = async (req, res, next) => {
+    try{
+        const records = await Record.find().sort({ createdAt: -1 });
+        res.status(200).json(records);
+    }
+    catch(err){
+        next(err);
+    }
+};
+
+exports.updateRecord = async (req, res, next) => {
+    try{
+        const id = req.params.id;
+        const update = await Record.findByIdAndUpdate(id, req.body,{new: true, runValidators: true});
+        if(!update){
+            return res.status(404).json({message : "Record not found"});
+        }
+        res.status(200).json(update);
+    }
+    catch(err){
+        next(err);
+    }   
+};
+
+exports.deleteRecord = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const deleted = await Record.findByIdAndDelete(id);
+        if(!deleted){
+            return res.status(404).json({message: "Record not found"});
+        } 
+        res.status(200).json({message: "Deleted", id});
+    }
+    catch(err){
+        next(err);
+    }
+}
